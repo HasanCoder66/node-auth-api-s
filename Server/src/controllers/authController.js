@@ -50,11 +50,6 @@ const login = async (req, res, next) => {
 };
 
 const signup = async (req, res, next) => {
-  // if(true){
-  //   throw "hunain nhi hai"
-  // }else {
-  //   throw "error ayaaa"
-  // }
   try {
     console.log(req.body);
 

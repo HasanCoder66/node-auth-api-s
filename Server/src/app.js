@@ -9,6 +9,10 @@ export const app = express()
 app.use(express.json())
 app.use(cors())
 
+app.get("/",(req, res) => {
+    res.send("hello from the server!")
+})
+
 // authentication
 app.use("/api/auth", authRoutes)
 
