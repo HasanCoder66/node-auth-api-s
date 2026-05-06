@@ -56,12 +56,14 @@ const signup = async (req, res, next) => {
     // let user ;
     const { age, email, password, userName } = req.body;
 
+    console.log(age, email, password, userName)
+
     // if(!user) throw new Error("user nhi hai...")
-    // if (!firstName || !lastName || !email || !password || !userName)
-    //   return res.json({
-    //     status: false,
-    //     message: "All Fields are required!",
-    //   });
+    if ( !email || !password || !userName || !age)
+      return res.status(400).json({
+        status: false,
+        message: "All Fields are required!",
+      });
 
     bcrypt.hash(password, 12, async function (err, hash) {
       // Store hash in your password DB.
@@ -73,14 +75,14 @@ const signup = async (req, res, next) => {
 
       await sendEmailOTP(email, otp);
 
-      await User.create({
+   let user =  await User.create({
         ...req.body,
         password: hash,
         otp,
         otpExpiry,
       });
 
-      successResponse(res, 200, true, "User Signup  Successfully");
+      successResponse(res, 200, true, "User Signup  Successfully", user);
     });
   } catch (error) {
     next(error);

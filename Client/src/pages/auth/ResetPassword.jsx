@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useDispatch } from 'react-redux';
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 import AuthLayout from "../../components/layout/AuthLayout";
+import { resetPassword } from "../../features/auth/authThunk";
 
 const ResetPassword = () => {
   const [form, setForm] = useState({
@@ -10,6 +12,8 @@ const ResetPassword = () => {
     password: "",
   });
 
+  const dispatch = useDispatch()
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -17,6 +21,7 @@ const ResetPassword = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(form);
+    dispatch(resetPassword(form))
   };
 
   return (
