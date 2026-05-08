@@ -51,40 +51,39 @@ const login = async (req, res, next) => {
 
 const signup = async (req, res, next) => {
   try {
-    console.log(req.body);
-
-    // let user ;
     const { age, email, password, userName } = req.body;
 
-    console.log(age, email, password, userName)
-
-    // if(!user) throw new Error("user nhi hai...")
-    if ( !email || !password || !userName || !age)
+    if (!email || !password || !userName || !age)
       return res.status(400).json({
         status: false,
         message: "All Fields are required!",
       });
 
-    bcrypt.hash(password, 12, async function (err, hash) {
-      // Store hash in your password DB.
+    const hashedPassword = await bcrypt.hash(password, 12);
 
-      const otp = uuidv4().slice(0, 4); // 8751987891dsafaqera
-      const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+    const otp = uuidv4().slice(0, 4); // 8751987891dsafaqera
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-      console.log("My otp ==> ", otp);
+    console.log("My otp ==> ", otp);
 
-      await sendEmailOTP(email, otp);
+    await sendEmailOTP(email, otp);
 
-   let user =  await User.create({
-        ...req.body,
-        password: hash,
-        otp,
-        otpExpiry,
-      });
-
-      successResponse(res, 200, true, "User Signup  Successfully", user);
+    let user = await User.create({
+      ...req.body,
+      password: hashedPassword,
+      otp,
+      otpExpiry,
     });
+
+    successResponse(res, 200, true, "User Signup  Successfully", user);
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({
+        status: false,
+        message: "Email already exists. Please use a different email.",
+      });
+    }
+
     next(error);
   }
 };
